@@ -1,0 +1,8 @@
+{
+	"name": "manakasi",
+	"description": "Mecab(Japanese morphological analyzer) wrapper for D",
+	"license": "BSD",
+
+	"libs": ["mecab"],
+	"targetType": "library"
+}
