@@ -221,7 +221,7 @@ struct DictionaryInfo
 
 	ushort ver;
 
-	this(mecab_dictionary_info_t* info) pure nothrow
+	this(const(mecab_dictionary_info_t)* info) pure nothrow
 	{
 		filename = info.filename.to!string;
 		charset = info.charset.to!string;
