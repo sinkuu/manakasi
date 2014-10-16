@@ -26,10 +26,10 @@ class Mecab
 
 	this(in string arg)
 	{
-		_model = mecab_model_new2(arg.toStringz).enforce("Failed to create model");
+		_model = enforce(mecab_model_new2(arg.toStringz), "Failed to create model");
 		scope(failure) mecab_model_destroy(_model);
 
-		_mecab = mecab_model_new_tagger(_model).enforce("Failed to create mecab");
+		_mecab = enforce(mecab_model_new_tagger(_model), "Failed to create mecab");
 		scope(failure) mecab_destroy(_mecab);
 	}
 
@@ -80,13 +80,13 @@ class Mecab
 		this(Lattice lattice)
 		{
 			_lattice = lattice;
-			current = mecab_lattice_get_bos_node(_lattice).enforce;
+			current = enforce(mecab_lattice_get_bos_node(_lattice));
 			current = current.next;
 
 			assert(current);
 		}
 
-		this(mecab_node_t* node)
+		this(mecab_node_t* node) @safe pure nothrow @nogc
 		{
 			current = node;
 			if (current.stat == MECAB_BOS_NODE) current = current.next;
@@ -106,7 +106,7 @@ class Mecab
 			return Node!S(*current);
 		}
 
-		void popFront() pure @safe nothrow @nogc
+		void popFront() @safe pure nothrow @nogc
 		{
 			assert(!empty);
 
@@ -157,7 +157,7 @@ class Mecab
 
 				do
 				{
-					mecab_node_t* node = mecab_lattice_get_bos_node(_lattice).enforce;
+					mecab_node_t* node = enforce(mecab_lattice_get_bos_node(_lattice));
 
 					result = dg(Nodes!S(node));
 					if (result != 0) break;
@@ -176,7 +176,7 @@ class Mecab
 
 				do
 				{
-					mecab_node_t* node = mecab_lattice_get_bos_node(_lattice).enforce;
+					mecab_node_t* node = enforce(mecab_lattice_get_bos_node(_lattice));
 
 					result = dg(idx, Nodes!S(node));
 					if (result != 0) break;
@@ -244,7 +244,7 @@ private final class Lattice
 	this(S)(Mecab mecab, S sentence)
 	if (isSomeString!S)
 	{
-		_lattice = mecab_model_new_lattice(mecab._model).enforce("Failed to create lattice");
+		_lattice = enforce(mecab_model_new_lattice(mecab._model), "Failed to create lattice");
 
 		mecab_lattice_set_sentence(_lattice, sentence.to!string.toStringz);
 		enforce(mecab_parse_lattice(mecab._mecab, _lattice), "Failed to parse");
@@ -305,7 +305,7 @@ if (isSomeString!S)
 	}
 }
 
-debug (TestMecab) unittest
+version (TestMecab) unittest
 {
 	auto mecab = new Mecab;
 	assert(mecab.segment("こんにちは世界"d).length != 0);
@@ -355,3 +355,4 @@ if (isSomeString!S)
 {
 	return getMecab().parseToBests(sentence, nbest);
 }
+
