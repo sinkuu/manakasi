@@ -46,16 +46,28 @@ class Mecab
 
 	@property auto dictionaryInfo() nothrow
 	{
-		auto app = appender!(immutable(DictionaryInfo)[]);
-
-		auto info = mecab_dictionary_info(_mecab);
-		while (info !is null)
+		static struct DictionaryInfos
 		{
-			app ~= DictionaryInfo(info);
-			info = info.next;
+			private const(mecab_dictionary_info_t)* _info;
+
+			DictionaryInfo front() const
+			{
+				return DictionaryInfo(_info);
+			}
+
+			@property bool empty() const
+			{
+				return _info is null;
+			}
+
+			void popFront()
+			{
+				assert(!empty);
+				_info = _info.next;
+			}
 		}
 
-		return app.data;
+		return DictionaryInfos(mecab_dictionary_info(_mecab));
 	}
 
 	string parseToString(S)(in S sentence)
@@ -115,7 +127,6 @@ class Mecab
 	}
 
 	static assert(isInputRange!(Nodes!wstring));
-
 
 	auto parseToNodes(S)(in S sentence)
 	if (isSomeString!S)
