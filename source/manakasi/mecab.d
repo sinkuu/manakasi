@@ -136,6 +136,7 @@ class Mecab
 
 			this(Mecab mecab, S sentence, ulong nbest) nothrow
 			{
+				assert(nbest > 0);
 				_nbest = nbest;
 
 				_lattice = mecab_model_new_lattice(mecab._model);
@@ -150,6 +151,8 @@ class Mecab
 				mecab_lattice_destroy(_lattice);
 			}
 
+			@disable this(this);
+
 			int opApply(int delegate(Nodes!S) dg)
 			{
 				int result;
@@ -163,7 +166,7 @@ class Mecab
 					if (result != 0) break;
 
 					idx++;
-					if (_nbest != 0 && idx >= _nbest) break;
+					if (idx >= _nbest) break;
 				} while(mecab_lattice_next(_lattice));
 
 				return result;
@@ -182,7 +185,7 @@ class Mecab
 					if (result != 0) break;
 
 					idx++;
-					if (_nbest != 0 && idx >= _nbest) break;
+					if (idx >= _nbest) break;
 				} while(mecab_lattice_next(_lattice));
 
 				return result;
@@ -196,11 +199,12 @@ class Mecab
 	S[] segment(S)(S sentence)
 	if (isSomeString!S)
 	{
+		import std.algorithm : map;
 		return parseToNodes(sentence).map!"a.surface".array;
 	}
 }
 
-enum DicrtionaryType
+enum DictionaryType
 {
 	system,
 	user,
@@ -214,7 +218,7 @@ struct DictionaryInfo
 
 	uint size;
 	
-	DicrtionaryType type;
+	DictionaryType type;
 
 	uint lsize;
 	uint rsize;
@@ -228,7 +232,7 @@ struct DictionaryInfo
 
 		size = info.size;
 
-		type = cast(DicrtionaryType) info.type;
+		type = cast(DictionaryType) info.type;
 
 		lsize = info.lsize;
 		rsize = info.rsize;
