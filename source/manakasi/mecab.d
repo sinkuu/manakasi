@@ -228,7 +228,7 @@ struct DictionaryInfo
 	string charset;
 
 	uint size;
-	
+
 	DictionaryType type;
 
 	uint lsize;
