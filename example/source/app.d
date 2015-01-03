@@ -4,9 +4,11 @@ import std.stdio;
 
 void main()
 {
-	writeln(segment("すもももももももものうち"w));
+	auto mecab = new Mecab;
 
-	foreach(n, nodes; parseToBests("吾輩は猫である。", 3))
+	writeln(mecab.segment("すもももももももものうち"w));
+
+	foreach(n, nodes; mecab.parseToBests("吾輩は猫である。", 3))
 	{
 		writeln(n + 1, " best:");
 
@@ -15,4 +17,6 @@ void main()
 			writeln(node.surface, "\t", node.feature);
 		}
 	}
+
+	foreach (d; mecab.dictionaryInfo) writeln(d);
 }
