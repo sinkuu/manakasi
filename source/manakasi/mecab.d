@@ -10,14 +10,13 @@ import std.string;
 import std.traits;
 
 
-string mecabVersion() pure nothrow @property
-{
-	return mecab_version().to!string;
-}
-
-
 class Mecab
 {
+	static @property string version_() pure nothrow
+	{
+		return mecab_version().to!string;
+	}
+
 	private
 	{
 		mecab_t* _mecab;
