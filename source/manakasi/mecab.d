@@ -44,7 +44,7 @@ class Mecab
 		mecab_model_destroy(_model);
 	}
 
-	@property auto dictionaryInfo() nothrow
+	@property auto dictionaryInfo() nothrow @nogc
 	{
 		static struct DictionaryInfos
 		{
@@ -64,6 +64,11 @@ class Mecab
 			{
 				assert(!empty);
 				_info = _info.next;
+			}
+
+			@property auto save()
+			{
+				return DictionaryInfos(_info);
 			}
 		}
 
