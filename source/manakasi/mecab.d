@@ -336,3 +336,42 @@ version (TestMecab) unittest
 	assert(!mecab.parseToNodes("こんにちは世界").empty);
 }
 
+
+
+private Mecab globalMecab;
+
+Mecab getMecab()
+{
+	if (globalMecab is null)
+	{
+		globalMecab = new Mecab;
+	}
+
+	return globalMecab;
+}
+
+
+S[] segment(S)(in S sentence)
+if (isSomeString!S)
+{
+	return getMecab().segment(sentence);
+}
+
+string parseToString(S)(in S sentence)
+if (isSomeString!S)
+{
+	return getMecab().parseToString(sentence);
+}
+
+auto parseToNodes(S)(in S sentence)
+if (isSomeString!S)
+{
+	return getMecab().parseToNodes(sentence);
+}
+
+auto parseToBests(S)(in S sentence, ulong nbest = 0)
+if (isSomeString!S)
+{
+	return getMecab().parseToBests(sentence, nbest);
+}
+
