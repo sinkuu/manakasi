@@ -337,6 +337,7 @@ version (TestMecab) unittest
 }
 
 
+deprecated("Please use class Mecab directly."):
 
 private Mecab globalMecab;
 
