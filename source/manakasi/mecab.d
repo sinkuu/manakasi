@@ -96,7 +96,7 @@ class Mecab
 		this(Lattice lattice)
 		{
 			_lattice = lattice;
-			current = enforce(mecab_lattice_get_bos_node(_lattice));
+			current = enforce(mecab_lattice_get_bos_node(_lattice.get));
 			current = current.next;
 
 			assert(current);
@@ -215,7 +215,10 @@ class Mecab
 	if (isSomeString!S)
 	{
 		import std.algorithm : map;
-		return parseToNodes(sentence).map!"a.surface".array;
+		import std.typecons : scoped;
+
+		auto lattice = scoped!Lattice(this, sentence);
+		return Nodes!S(lattice).map!(a => a.surface).array;
 	}
 }
 
@@ -274,7 +277,10 @@ private final class Lattice
 		mecab_lattice_destroy(_lattice);
 	}
 
-	alias _lattice this;
+	@property auto get()
+	{
+		return _lattice;
+	}
 }
 
 enum NodeStat
